@@ -5,7 +5,7 @@ echo "🚀 Starting Bus Niyojak Backend..."
 # Check if .env file exists
 if [ ! -f .env ]; then
     echo "❌ .env file not found. Creating default .env file..."
-    echo "MONGODB_URI=mongodb+srv://busniyojak:busniyojak:@busniyojak.zfxad14.mongodb.net/?retryWrites=true&w=majority&appName=BusNiyojak" > .env
+    echo "MONGODB_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/?retryWrites=true&w=majority" > .env
     echo "PORT=5001" >> .env
     echo "JWT_SECRET=your-super-secret-jwt-key-change-this-in-production" >> .env
     echo "NODE_ENV=development" >> .env
