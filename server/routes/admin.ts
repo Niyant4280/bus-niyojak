@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { LoginResponse, User } from "@shared/types";
+import { LoginResponse, User } from "../../shared/types";
 
 const mockAdminUser: User = {
   id: "admin-1",

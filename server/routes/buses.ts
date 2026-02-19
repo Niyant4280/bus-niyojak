@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { Bus } from "@shared/types";
+import { Bus } from "../../shared/types";
 
 // In-memory storage for buses
 let buses: Bus[] = [

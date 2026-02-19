@@ -4,7 +4,7 @@ import {
   User,
   LoginRequest,
   RegisterRequest,
-} from "@shared/types";
+} from "../../shared/types";
 
 // Mock user database
 const mockUsers: User[] = [

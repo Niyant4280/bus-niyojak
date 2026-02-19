@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { CrewMember } from "@shared/types";
+import { CrewMember } from "../../shared/types";
 
 const crew: CrewMember[] = [
   {
