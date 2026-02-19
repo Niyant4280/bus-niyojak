@@ -1,0 +1,215 @@
+================================================================================
+                    BUS नियोजक (BUS NIYOJAK) - LOGO SPECIFICATIONS
+================================================================================
+
+BRAND NAME: Bus नियोजक (Bus Niyojak)
+MEANING: "Bus Manager" in Nepali
+TAGLINE: "Empowering your journey. Made with care for every commuter."
+
+================================================================================
+                                LOGO COMPONENTS
+================================================================================
+
+1. PRIMARY LOGO MARK
+   - Icon: Bus symbol (🚌) or stylized bus graphic
+   - Text: "Bus" (English) + "नियोजक" (Devanagari script)
+   - Layout: Horizontal arrangement with icon on left
+
+2. LOGO VARIATIONS
+   
+   A. FULL LOGO (Primary)
+      [🚌] Bus नियोजक
+      
+   B. COMPACT LOGO
+      [🚌] Bus नियोजक
+      
+   C. ICON-ONLY LOGO
+      [🚌]
+      
+   D. TEXT-ONLY LOGO
+      Bus नियोजक
+      
+   E. MINIMALIST LOGO
+      BN
+
+================================================================================
+                                COLOR SPECIFICATIONS
+================================================================================
+
+PRIMARY COLORS:
+- Main Red: #DC2626 (rgba(220,38,38,1)) - Primary brand color
+- Dark Red: #B91C1C (hover states)
+- Light Red: #FEE2E2 (backgrounds)
+
+SECONDARY COLORS:
+- Blue: #3B82F6 (Real-time tracking badges)
+- Green: #10B981 (Secure & reliable badges)
+- Orange: #F59E0B (Smart insights badges)
+- Purple: #8B5CF6 (Trending features)
+- Yellow: #F59E0B (Instant updates)
+
+NEUTRAL COLORS:
+- Black: #000000 (Primary text)
+- White: #FFFFFF (Backgrounds)
+- Gray: #6B7280 (Secondary text)
+- Light Gray: #F3F4F6 (Borders)
+
+================================================================================
+                                TYPOGRAPHY
+================================================================================
+
+ENGLISH TEXT ("Bus"):
+- Font Family: Inter, system-ui, sans-serif
+- Weight: Bold (700)
+- Color: Black (#000000)
+- Size: Responsive (text-xl to text-6xl)
+
+DEVANAGARI TEXT ("नियोजक"):
+- Font Family: Noto Sans Devanagari, system-ui, sans-serif
+- Weight: Bold (700)
+- Color: Red (#DC2626)
+- Size: Same as English text
+
+ICON:
+- Style: Modern, minimalist bus icon
+- Color: White (#FFFFFF) on red background
+- Background: Red (#DC2626) with rounded corners
+- Size: 24x24px (h-6 w-6) minimum
+
+================================================================================
+                                LOGO USAGE RULES
+================================================================================
+
+1. MINIMUM SIZE REQUIREMENTS:
+   - Full Logo: Minimum 120px width
+   - Icon Only: Minimum 24px x 24px
+   - Text Only: Minimum 80px width
+
+2. CLEAR SPACE:
+   - Maintain clear space around logo equal to height of "न" character
+   - Never place text or graphics within this clear space
+
+3. BACKGROUND REQUIREMENTS:
+   - Light backgrounds: Use full color version
+   - Dark backgrounds: Use white version
+   - Red backgrounds: Use white text with black outline
+
+4. PROHIBITED USES:
+   - Never stretch or distort the logo
+   - Never change colors arbitrarily
+   - Never place on busy backgrounds
+   - Never rotate the logo
+   - Never add shadows or effects
+
+================================================================================
+                                LOGO APPLICATIONS
+================================================================================
+
+1. DIGITAL APPLICATIONS:
+   - Website header: 120px x 40px
+   - Mobile app icon: 512px x 512px
+   - Social media profile: 400px x 400px
+   - Email signature: 200px x 60px
+
+2. PRINT APPLICATIONS:
+   - Business cards: 30mm x 15mm
+   - Letterhead: 40mm x 20mm
+   - Brochures: 50mm x 25mm
+   - Billboards: 2m x 1m
+
+3. MERCHANDISE:
+   - T-shirts: 15cm x 8cm
+   - Caps: 8cm x 6cm
+   - Bags: 20cm x 12cm
+
+================================================================================
+                                LOGO FILES REQUIRED
+================================================================================
+
+VECTOR FORMATS:
+- Logo.ai (Adobe Illustrator)
+- Logo.svg (Scalable Vector Graphics)
+- Logo.eps (Encapsulated PostScript)
+
+RASTER FORMATS:
+- Logo.png (High resolution, transparent background)
+- Logo.jpg (High resolution, white background)
+- Logo.webp (Web optimized)
+
+SPECIFIC SIZES:
+- 16x16px (favicon)
+- 32x32px (favicon)
+- 64x64px (favicon)
+- 128x128px (app icon)
+- 256x256px (app icon)
+- 512x512px (app icon)
+- 1024x1024px (high resolution)
+
+================================================================================
+                                BRAND GUIDELINES
+================================================================================
+
+1. BRAND PERSONALITY:
+   - Modern and innovative
+   - Trustworthy and reliable
+   - Accessible and user-friendly
+   - Culturally inclusive (Nepali + English)
+
+2. BRAND VALUES:
+   - Innovation in transportation
+   - Community service
+   - Technological advancement
+   - Cultural preservation
+   - User empowerment
+
+3. TARGET AUDIENCE:
+   - Primary: Daily commuters in Nepal
+   - Secondary: Tourists and visitors
+   - Tertiary: Transportation authorities
+   - Quaternary: Technology enthusiasts
+
+================================================================================
+                                IMPLEMENTATION NOTES
+================================================================================
+
+CURRENT WEBSITE IMPLEMENTATION:
+- Navigation header uses red background (#DC2626) with white bus icon
+- Logo text combines black "Bus" with red "नियोजक"
+- Footer uses primary color background with white bus icon
+- Consistent spacing and typography throughout
+
+TECHNICAL SPECIFICATIONS:
+- Built with React + TypeScript
+- Uses Tailwind CSS for styling
+- Responsive design for all screen sizes
+- Accessible color contrast ratios
+- SEO optimized with proper heading hierarchy
+
+================================================================================
+                                CONTACT INFORMATION
+================================================================================
+
+For logo usage rights, brand guidelines, or design inquiries:
+- Project: Bus नियोजक (Bus Niyojak)
+- Type: Transportation Management System
+- Status: Active Development
+- License: MIT License
+- Repository: SGP5 Project
+
+================================================================================
+                                VERSION HISTORY
+================================================================================
+
+Version 1.0 (Current):
+- Initial logo design
+- Red (#DC2626) primary color
+- Bus icon + bilingual text
+- Responsive design implementation
+- Brand guidelines established
+
+================================================================================
+                                END OF SPECIFICATIONS
+================================================================================
+
+This document serves as the official logo specification for Bus नियोजक (Bus Niyojak).
+All logo usage must comply with these specifications to maintain brand consistency.
