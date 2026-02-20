@@ -490,15 +490,15 @@ export const getGTFSRoutes = async (req: Request, res: Response) => {
     const skip = (Number(page) - 1) * Number(limit);
 
     let filteredRoutes = mockGTFSRoutes.filter(route => route.isActive);
-    
+
     if (search) {
       const searchTerm = (search as string).toLowerCase();
-      filteredRoutes = filteredRoutes.filter(route => 
+      filteredRoutes = filteredRoutes.filter(route =>
         route.route_short_name.toLowerCase().includes(searchTerm) ||
         route.route_long_name.toLowerCase().includes(searchTerm)
       );
     }
-    
+
     if (type) {
       const routeType = parseInt(type as string);
       filteredRoutes = filteredRoutes.filter(route => route.route_type === routeType);
@@ -536,10 +536,10 @@ export const getGTFSStops = async (req: Request, res: Response) => {
     const skip = (Number(page) - 1) * Number(limit);
 
     let filteredStops = mockGTFSStops.filter(stop => stop.isActive);
-    
+
     if (search) {
       const searchTerm = (search as string).toLowerCase();
-      filteredStops = filteredStops.filter(stop => 
+      filteredStops = filteredStops.filter(stop =>
         stop.stop_name.toLowerCase().includes(searchTerm) ||
         stop.stop_desc.toLowerCase().includes(searchTerm)
       );
@@ -596,14 +596,15 @@ export const getGTFSStops = async (req: Request, res: Response) => {
 // Search routes between stops
 export const searchGTFSRoutes = async (req: Request, res: Response) => {
   try {
-    const { from, to, date, time } = req.query;
-    
-    if (!from || !to || from.trim() === '' || to.trim() === '') {
+    const query = req.query as any;
+    const { from, to, date, time } = query;
+
+    if (!from || !to || (from as string).trim() === '' || (to as string).trim() === '') {
       // If no search terms provided, return all routes
       const allRoutesSorted = mockGTFSRoutes
         .filter(route => route.isActive)
         .sort((a, b) => a.route_short_name.localeCompare(b.route_short_name));
-      
+
       return res.json({
         success: true,
         data: allRoutesSorted,
@@ -616,12 +617,12 @@ export const searchGTFSRoutes = async (req: Request, res: Response) => {
     }
 
     // Find stops that match the search terms
-    const fromStops = mockGTFSStops.filter(stop => 
+    const fromStops = mockGTFSStops.filter(stop =>
       stop.stop_name.toLowerCase().includes((from as string).toLowerCase()) ||
       stop.stop_desc.toLowerCase().includes((from as string).toLowerCase())
     );
 
-    const toStops = mockGTFSStops.filter(stop => 
+    const toStops = mockGTFSStops.filter(stop =>
       stop.stop_name.toLowerCase().includes((to as string).toLowerCase()) ||
       stop.stop_desc.toLowerCase().includes((to as string).toLowerCase())
     );
@@ -634,17 +635,17 @@ export const searchGTFSRoutes = async (req: Request, res: Response) => {
       .map(route => {
         // Calculate route relevance score based on various factors
         let score = 0;
-        
+
         // Base score for route type (bus routes get higher priority)
         if (route.route_type === 1) score += 2;
         else if (route.route_type === 2) score += 1;
         else score += 0;
-        
+
         // Check if route name contains destination keywords
         const routeName = route.route_long_name?.toLowerCase() || '';
         const fromLower = (from as string).toLowerCase();
         const toLower = (to as string).toLowerCase();
-        
+
         // Direct route matches get highest priority
         if (routeName.includes(fromLower) && routeName.includes(toLower)) {
           score += 50; // Much higher score for exact matches
@@ -654,7 +655,7 @@ export const searchGTFSRoutes = async (req: Request, res: Response) => {
           // Check for partial word matches
           const fromWords = fromLower.split(' ').filter(word => word.length > 2);
           const toWords = toLower.split(' ').filter(word => word.length > 2);
-          
+
           let partialMatches = 0;
           fromWords.forEach(word => {
             if (routeName.includes(word)) partialMatches += 5;
@@ -662,26 +663,26 @@ export const searchGTFSRoutes = async (req: Request, res: Response) => {
           toWords.forEach(word => {
             if (routeName.includes(word)) partialMatches += 5;
           });
-          
+
           score += partialMatches;
         }
-        
+
         // Shorter route names typically indicate more direct routes
         const nameLength = route.route_long_name?.length || 0;
         if (nameLength < 30) score += 5;
         else if (nameLength < 50) score += 3;
         else if (nameLength > 80) score -= 2;
-        
+
         // Route number patterns (shorter numbers often indicate main routes)
         const routeNumber = route.route_short_name?.length || 0;
         if (routeNumber <= 3) score += 3;
         else if (routeNumber <= 5) score += 1;
-        
+
         // Color-coded routes (main lines) get priority
         if (route.route_color && route.route_color !== '000000') {
           score += 2;
         }
-        
+
         return { ...route, relevanceScore: score };
       })
       .filter(route => route.relevanceScore > 10) // Only return routes with meaningful relevance
@@ -690,7 +691,7 @@ export const searchGTFSRoutes = async (req: Request, res: Response) => {
     // Return all relevant routes sorted by relevance score
     // Remove duplicates and return all matching routes
     let uniqueRoutes = filteredRoutes
-      .filter((route, index, self) => 
+      .filter((route, index, self) =>
         index === self.findIndex(r => r.route_id === route.route_id)
       );
 

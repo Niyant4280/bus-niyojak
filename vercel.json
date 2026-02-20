@@ -1,10 +1,15 @@
 {
     "buildCommand": "npm run build:client",
     "outputDirectory": "dist/spa",
+    "functions": {
+        "api/index.ts": {
+            "includeFiles": "server/**"
+        }
+    },
     "rewrites": [
         {
             "source": "/api/(.*)",
-            "destination": "/api/index"
+            "destination": "/api/index.ts"
         },
         {
             "source": "/(.*)",
