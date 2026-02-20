@@ -13,19 +13,32 @@ const mockAdminUser: User = {
 };
 
 export const adminLogin: RequestHandler = (req, res) => {
-  const { email, password } = req.body || {};
-  const adminEmail = process.env.ADMIN_EMAIL ?? "admin@busniyojak.com";
-  const adminPassword = process.env.ADMIN_PASSWORD ?? "BusAdmin2024!";
-  const validPairs = [
-    { email: adminEmail, password: adminPassword },
-  ];
-  if (validPairs.some((p) => p.email === email && p.password === password)) {
-    const token = `admin-jwt-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-    const refreshToken = `refresh-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-    const response: LoginResponse = { user: mockAdminUser, token, refreshToken };
-    return res.json(response);
+  try {
+    const { email, password } = req.body || {};
+    const adminEmail = process.env.ADMIN_EMAIL ?? "admin@busniyojak.com";
+    const adminPassword = process.env.ADMIN_PASSWORD ?? "BusAdmin2024!";
+
+    console.log(`Admin login attempt for: ${email}`);
+
+    const validPairs = [
+      { email: adminEmail, password: adminPassword },
+    ];
+
+    if (validPairs.some((p) => p.email === email && p.password === password)) {
+      const token = `admin-jwt-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+      const refreshToken = `refresh-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+      const response: LoginResponse = { user: mockAdminUser, token, refreshToken };
+      return res.json(response);
+    }
+
+    return res.status(401).json({ error: "Invalid admin credentials" });
+  } catch (error) {
+    console.error("Critical error during admin login:", error);
+    return res.status(500).json({
+      error: "Internal server error during login",
+      details: error instanceof Error ? error.message : "Unknown error"
+    });
   }
-  return res.status(401).json({ error: "Invalid admin credentials" });
 };
 
 export const verifyAdminToken: RequestHandler = (req, res) => {

@@ -1,4 +1,19 @@
 import { createServer } from "../server/index";
 
-const app = createServer();
+let app;
+try {
+    app = createServer();
+} catch (error) {
+    console.error("Failed to initialize Express app:", error);
+    // Fallback app if creation fails
+    const express = require("express");
+    app = express();
+    app.all("*", (req, res) => {
+        res.status(500).json({
+            error: "Server initialization failed",
+            message: error instanceof Error ? error.message : "Unknown error"
+        });
+    });
+}
+
 export default app;
