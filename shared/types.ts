@@ -149,6 +149,9 @@ export interface LoginResponse {
   user: User;
   token: string;
   refreshToken: string;
+  _metadata?: {
+    db?: string;
+  };
 }
 
 export interface DashboardStats {

@@ -12,13 +12,18 @@ const mockAdminUser: User = {
   lastLogin: new Date(),
 };
 
-export const adminLogin: RequestHandler = (req, res) => {
+export const adminLogin: RequestHandler = async (req, res) => {
   try {
     const { email, password } = req.body || {};
     const adminEmail = process.env.ADMIN_EMAIL ?? "admin@busniyojak.com";
     const adminPassword = process.env.ADMIN_PASSWORD ?? "BusAdmin2024!";
 
     console.log(`Admin login attempt for: ${email}`);
+
+    // Check if database is connected for visibility
+    const mongoose = (await import("mongoose")).default;
+    const dbStatus = mongoose.connection.readyState === 1 ? "Connected" : "Disconnected";
+    console.log(`Database status: ${dbStatus}`);
 
     const validPairs = [
       { email: adminEmail, password: adminPassword },
@@ -27,16 +32,23 @@ export const adminLogin: RequestHandler = (req, res) => {
     if (validPairs.some((p) => p.email === email && p.password === password)) {
       const token = `admin-jwt-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
       const refreshToken = `refresh-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-      const response: LoginResponse = { user: mockAdminUser, token, refreshToken };
+      const response: LoginResponse = {
+        user: mockAdminUser,
+        token,
+        refreshToken,
+        _metadata: { db: dbStatus }
+      };
       return res.json(response);
     }
 
     return res.status(401).json({ error: "Invalid admin credentials" });
   } catch (error) {
     console.error("Critical error during admin login:", error);
+    const mongoose = (await import("mongoose")).default;
     return res.status(500).json({
       error: "Internal server error during login",
-      details: error instanceof Error ? error.message : "Unknown error"
+      details: error instanceof Error ? error.message : "Unknown error",
+      dbStatus: mongoose.connection.readyState === 1 ? "Connected" : "Disconnected"
     });
   }
 };

@@ -3,7 +3,7 @@
     "outputDirectory": "dist/spa",
     "functions": {
         "api/index.ts": {
-            "includeFiles": "server/**"
+            "includeFiles": "{server,backend,shared}/**"
         }
     },
     "rewrites": [
