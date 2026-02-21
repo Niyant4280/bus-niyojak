@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import { LoginResponse, User } from "../../shared/types";
+import mongoose from "mongoose";
 
 const mockAdminUser: User = {
   id: "admin-1",
@@ -21,7 +22,6 @@ export const adminLogin: RequestHandler = async (req, res) => {
     console.log(`Admin login attempt for: ${email}`);
 
     // Check if database is connected for visibility
-    const mongoose = (await import("mongoose")).default;
     const dbStatus = mongoose.connection.readyState === 1 ? "Connected" : "Disconnected";
     console.log(`Database status: ${dbStatus}`);
 
@@ -44,7 +44,6 @@ export const adminLogin: RequestHandler = async (req, res) => {
     return res.status(401).json({ error: "Invalid admin credentials" });
   } catch (error) {
     console.error("Critical error during admin login:", error);
-    const mongoose = (await import("mongoose")).default;
     return res.status(500).json({
       error: "Internal server error during login",
       details: error instanceof Error ? error.message : "Unknown error",
