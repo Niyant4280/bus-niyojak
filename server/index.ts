@@ -23,7 +23,6 @@ import {
   getGTFSStops,
   searchGTFSRoutes,
 } from "./routes/gtfs";
-// Admin routes removed per request
 import {
   userLogin,
   userRegister,
@@ -34,8 +33,37 @@ import {
   requireUser,
   forgotPassword,
 } from "./routes/auth";
+import dotenv from "dotenv";
+import mongoose from "mongoose";
+
+// Load environment variables locally
+dotenv.config();
+
+/**
+ * Ensures MongoDB is connected.
+ * In a serverless environment like Vercel, this may be called multiple times.
+ */
+async function connectToDatabase() {
+  if (mongoose.connection.readyState >= 1) return;
+
+  const mongoUri = process.env.MONGODB_URI;
+  if (!mongoUri) {
+    console.warn("MONGODB_URI not found. Running in mock mode.");
+    return;
+  }
+
+  try {
+    await mongoose.connect(mongoUri);
+    console.log("✅ Main server connected to MongoDB");
+  } catch (error) {
+    console.error("❌ MongoDB connection error:", error);
+  }
+}
 
 export function createServer() {
+  // Ensure DB connection is initiated
+  connectToDatabase();
+
   const app = express();
 
   // Middleware
