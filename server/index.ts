@@ -40,10 +40,13 @@ import { fileURLToPath } from "url";
 // Environment variable handling
 if (process.env.NODE_ENV !== "production") {
   try {
-    dotenv.config();
-    console.log("[Environment] Local .env loaded (if present)");
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+    const envPath = path.resolve(__dirname, "../.env");
+    dotenv.config({ path: envPath, override: true });
+    console.log(`[Environment] Local .env loaded from: ${envPath}`);
   } catch (e) {
-    // Silent catch for production environments where dotenv might not be needed
+    console.error("[Environment] Failed to load .env:", e);
   }
 }
 
