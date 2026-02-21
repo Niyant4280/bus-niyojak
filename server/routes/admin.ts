@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { LoginResponse, User } from "../../shared/types";
+import { LoginResponse, User } from "../../shared/types.js";
 import mongoose from "mongoose";
 
 const mockAdminUser: User = {

@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { BusSchedule } from "../../shared/types";
+import { BusSchedule } from "../../shared/types.js";
 
 const schedules: BusSchedule[] = [
   {
