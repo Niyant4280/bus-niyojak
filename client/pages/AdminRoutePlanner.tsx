@@ -4,7 +4,7 @@ import Navigation from "@/components/Navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, MapPin, Route as RouteIcon, Download, Navigation as NavigationIcon, Search } from "lucide-react";
+import { ArrowLeft, MapPin, Route as RouteIcon, Download, Navigation as NavigationIcon, Search, Save, CheckCircle } from "lucide-react";
 import { ProposedRouteSegment, RouteOverlapResult } from "@shared/types";
 
 export default function AdminRoutePlanner() {
@@ -19,7 +19,10 @@ export default function AdminRoutePlanner() {
   ]);
   const [overlap, setOverlap] = useState<RouteOverlapResult | null>(null);
   const [loading, setLoading] = useState(false);
+  const [saveLoading, setSaveLoading] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
   const [searchingLocation, setSearchingLocation] = useState<string | null>(null);
+
   const adminToken = typeof window !== "undefined" ? localStorage.getItem("adminToken") : null;
   const headers: HeadersInit = useMemo(() => ({ "Content-Type": "application/json", ...(adminToken ? { Authorization: `Bearer ${adminToken}` } : {}) }), [adminToken]);
 
@@ -35,6 +38,45 @@ export default function AdminRoutePlanner() {
     }
   };
 
+  const saveRoute = async () => {
+    if (!name || !fromCoords || !toCoords) {
+      alert("Please enter route name and select start/end points");
+      return;
+    }
+
+    setSaveLoading(true);
+    try {
+      const stops = [
+        { name: fromLocation || "Start", lat: fromCoords.lat, lng: fromCoords.lng },
+        { name: toLocation || "End", lat: toCoords.lat, lng: toCoords.lng }
+      ];
+
+      const res = await fetch("/api/routes", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          routeName: name,
+          stops,
+          busNumber: "TBD",
+          frequency: "Every 20 mins",
+          capacity: 50
+        })
+      });
+
+      if (res.ok) {
+        setSaveSuccess(true);
+        setTimeout(() => setSaveSuccess(false), 3000);
+      } else {
+        alert("Failed to save route");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Error saving route");
+    } finally {
+      setSaveLoading(false);
+    }
+  };
+
   const geocodeLocation = async (location: string, type: 'from' | 'to') => {
     setSearchingLocation(type);
     try {
@@ -43,17 +85,17 @@ export default function AdminRoutePlanner() {
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}&limit=1&countrycodes=in&state=Delhi`
       );
       const data = await response.json();
-      
+
       if (data && data.length > 0) {
         const { lat, lon } = data[0];
         const coords = { lat: parseFloat(lat), lng: parseFloat(lon) };
-        
+
         if (type === 'from') {
           setFromCoords(coords);
         } else {
           setToCoords(coords);
         }
-        
+
         // Update path if both locations are set
         if (type === 'from' && toCoords) {
           setPath([coords, toCoords]);
@@ -88,13 +130,30 @@ export default function AdminRoutePlanner() {
       <div className="max-w-7xl mx-auto px-0 sm:px-4 lg:px-6 py-6">
         <div className="flex items-center justify-between mb-6 sm:mb-8">
           <div className="flex items-center gap-4">
-            <Button variant="outline" size="sm" asChild><Link to="/admin"><ArrowLeft className="h-4 w-4 mr-2"/>Back</Link></Button>
+            <Button variant="outline" size="sm" asChild><Link to="/admin"><ArrowLeft className="h-4 w-4 mr-2" />Back</Link></Button>
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Route Planner</h1>
               <p className="text-gray-600">Draw proposed routes and analyze overlaps with existing network</p>
             </div>
           </div>
-          <div className="flex gap-2"><Button variant="outline" onClick={computeOverlap} disabled={loading}><Download className="h-4 w-4 mr-2"/>Analyze Overlap</Button></div>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={computeOverlap} disabled={loading}>
+              <Download className="h-4 w-4 mr-2" />
+              Analyze Overlap
+            </Button>
+            <Button
+              className="bg-green-600 hover:bg-green-700 text-white"
+              onClick={saveRoute}
+              disabled={saveLoading || !name || !fromCoords || !toCoords}
+            >
+              {saveSuccess ? (
+                <CheckCircle className="h-4 w-4 mr-2" />
+              ) : (
+                <Save className="h-4 w-4 mr-2" />
+              )}
+              {saveSuccess ? "Saved!" : saveLoading ? "Saving..." : "Save Route"}
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
@@ -102,7 +161,7 @@ export default function AdminRoutePlanner() {
             <Card className="mb-6">
               <CardHeader>
                 <CardTitle className="flex items-center">
-                  <NavigationIcon className="h-5 w-5 mr-2"/>
+                  <NavigationIcon className="h-5 w-5 mr-2" />
                   Route Planning
                 </CardTitle>
               </CardHeader>
@@ -112,14 +171,14 @@ export default function AdminRoutePlanner() {
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-gray-700">From (Starting Point)</label>
                       <div className="flex gap-2">
-                        <Input 
-                          className="bg-white border border-gray-300 focus:border-gray-400 focus:ring-0 rounded-md h-10" 
-                          value={fromLocation} 
-                          onChange={(e) => setFromLocation(e.target.value)} 
+                        <Input
+                          className="bg-white border border-gray-300 focus:border-gray-400 focus:ring-0 rounded-md h-10"
+                          value={fromLocation}
+                          onChange={(e) => setFromLocation(e.target.value)}
                           placeholder="e.g. Connaught Place, Delhi"
                         />
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           onClick={() => geocodeLocation(fromLocation, 'from')}
                           disabled={!fromLocation || searchingLocation === 'from'}
                         >
@@ -136,18 +195,18 @@ export default function AdminRoutePlanner() {
                         </div>
                       )}
                     </div>
-                    
+
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-gray-700">To (Destination)</label>
                       <div className="flex gap-2">
-                        <Input 
-                          className="bg-white border border-gray-300 focus:border-gray-400 focus:ring-0 rounded-md h-10" 
-                          value={toLocation} 
-                          onChange={(e) => setToLocation(e.target.value)} 
+                        <Input
+                          className="bg-white border border-gray-300 focus:border-gray-400 focus:ring-0 rounded-md h-10"
+                          value={toLocation}
+                          onChange={(e) => setToLocation(e.target.value)}
                           placeholder="e.g. India Gate, Delhi"
                         />
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           onClick={() => geocodeLocation(toLocation, 'to')}
                           disabled={!toLocation || searchingLocation === 'to'}
                         >
@@ -165,9 +224,9 @@ export default function AdminRoutePlanner() {
                       )}
                     </div>
                   </div>
-                  
+
                   {fromCoords && toCoords && (
-                    <Button 
+                    <Button
                       onClick={showRouteOnMap}
                       className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                     >
@@ -182,7 +241,7 @@ export default function AdminRoutePlanner() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
-                  <RouteIcon className="h-5 w-5 mr-2"/>
+                  <RouteIcon className="h-5 w-5 mr-2" />
                   Map View
                 </CardTitle>
               </CardHeader>
@@ -214,7 +273,7 @@ export default function AdminRoutePlanner() {
               </CardContent>
             </Card>
           </div>
-          
+
           <div className="lg:col-span-1">
             <Card>
               <CardHeader>
@@ -224,14 +283,14 @@ export default function AdminRoutePlanner() {
                 <div className="space-y-3 sm:space-y-4">
                   <div className="space-y-1">
                     <label className="text-sm font-medium text-gray-700">Route Name</label>
-                    <Input 
-                      className="bg-white border border-gray-300 focus:border-gray-400 focus:ring-0 rounded-md h-10" 
-                      value={name} 
-                      onChange={(e) => setName(e.target.value)} 
-                      placeholder="e.g. New South Link" 
+                    <Input
+                      className="bg-white border border-gray-300 focus:border-gray-400 focus:ring-0 rounded-md h-10"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="e.g. New South Link"
                     />
                   </div>
-                  
+
                   {overlap && (
                     <div className="mt-4 p-3 bg-blue-50 rounded-lg">
                       <div className="text-sm">

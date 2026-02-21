@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { RouteModel } from "../models/Route.js";
 
 // Complete GTFS routes data from your CSV file
 const mockGTFSRoutes = [
@@ -489,11 +490,25 @@ export const getGTFSRoutes = async (req: Request, res: Response) => {
     const { page = 1, limit = 50, search, type } = req.query;
     const skip = (Number(page) - 1) * Number(limit);
 
-    let filteredRoutes = mockGTFSRoutes.filter(route => route.isActive);
+    // Fetch custom routes from DB
+    const dbRoutes = await RouteModel.find({ isActive: true });
+    const convertedDbRoutes = dbRoutes.map(route => ({
+      route_id: route._id.toString(),
+      agency_id: "CUSTOM",
+      route_short_name: (route as any).busNumber || "BUS",
+      route_long_name: (route as any).routeName,
+      route_desc: `Operated by Bus नियोजक`,
+      route_type: 3, // Bus
+      route_color: "4F46E5",
+      route_text_color: "FFFFFF",
+      isActive: (route as any).isActive
+    }));
+
+    let allRoutes = [...mockGTFSRoutes, ...convertedDbRoutes].filter(route => route.isActive);
 
     if (search) {
       const searchTerm = (search as string).toLowerCase();
-      filteredRoutes = filteredRoutes.filter(route =>
+      allRoutes = allRoutes.filter(route =>
         route.route_short_name.toLowerCase().includes(searchTerm) ||
         route.route_long_name.toLowerCase().includes(searchTerm)
       );
@@ -501,14 +516,14 @@ export const getGTFSRoutes = async (req: Request, res: Response) => {
 
     if (type) {
       const routeType = parseInt(type as string);
-      filteredRoutes = filteredRoutes.filter(route => route.route_type === routeType);
+      allRoutes = allRoutes.filter(route => route.route_type === routeType);
     }
 
-    const routes = filteredRoutes
+    const routes = allRoutes
       .sort((a, b) => a.route_short_name.localeCompare(b.route_short_name))
       .slice(skip, skip + Number(limit));
 
-    const total = filteredRoutes.length;
+    const total = allRoutes.length;
 
     res.json({
       success: true,
@@ -535,11 +550,24 @@ export const getGTFSStops = async (req: Request, res: Response) => {
     const { page = 1, limit = 50, search, lat, lng, radius = 5 } = req.query;
     const skip = (Number(page) - 1) * Number(limit);
 
-    let filteredStops = mockGTFSStops.filter(stop => stop.isActive);
+    // Extract stops from persistent routes
+    const dbRoutes = await RouteModel.find({ isActive: true });
+    const dbStops = dbRoutes.flatMap(route =>
+      route.stops.map(stop => ({
+        stop_id: (stop as any)._id?.toString() || `stop_${Math.random()}`,
+        stop_name: stop.name,
+        stop_desc: route.routeName,
+        stop_lat: stop.lat,
+        stop_lon: stop.lng,
+        isActive: true
+      }))
+    );
+
+    let allStops = [...mockGTFSStops, ...dbStops].filter(stop => stop.isActive);
 
     if (search) {
       const searchTerm = (search as string).toLowerCase();
-      filteredStops = filteredStops.filter(stop =>
+      allStops = allStops.filter(stop =>
         stop.stop_name.toLowerCase().includes(searchTerm) ||
         stop.stop_desc.toLowerCase().includes(searchTerm)
       );
@@ -554,7 +582,7 @@ export const getGTFSStops = async (req: Request, res: Response) => {
       const lngNum = parseFloat(lng as string);
       const radiusNum = parseFloat(radius as string);
 
-      const stopsWithDistance = filteredStops.map(stop => {
+      const stopsWithDistance = allStops.map(stop => {
         const distance = Math.sqrt(
           Math.pow(stop.stop_lat - latNum, 2) + Math.pow(stop.stop_lon - lngNum, 2)
         ) * 111; // Rough conversion to km
@@ -567,11 +595,11 @@ export const getGTFSStops = async (req: Request, res: Response) => {
 
       total = stopsWithDistance.length;
     } else {
-      stops = filteredStops
+      stops = allStops
         .sort((a, b) => a.stop_name.localeCompare(b.stop_name))
         .slice(skip, skip + Number(limit));
 
-      total = filteredStops.length;
+      total = allStops.length;
     }
 
     res.json({
