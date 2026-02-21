@@ -2,8 +2,8 @@
     "buildCommand": "npm run build:client",
     "outputDirectory": "dist/spa",
     "functions": {
-        "api/**/*.ts": {
-            "includeFiles": "server/**"
+        "api/*.ts": {
+            "includeFiles": "{server,shared}/**"
         }
     },
     "rewrites": [
