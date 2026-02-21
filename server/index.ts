@@ -35,28 +35,44 @@ import {
 } from "./routes/auth";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import path from "path";
+import { fileURLToPath } from "url";
 
-// Load environment variables locally
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load environment variables locally only (Vercel provides them directly)
+if (process.env.NODE_ENV !== "production") {
+  try {
+    dotenv.config({ path: path.resolve(__dirname, "../.env") });
+    console.log("[Environment] Local .env loaded");
+  } catch (e) {
+    console.log("[Environment] No .env found or failed to load");
+  }
+}
 
 /**
  * Ensures MongoDB is connected.
- * In a serverless environment like Vercel, this may be called multiple times.
  */
 async function connectToDatabase() {
   if (mongoose.connection.readyState >= 1) return;
 
   const mongoUri = process.env.MONGODB_URI;
+
+  // Debug logging for environment
+  const maskedUri = mongoUri ? `${mongoUri.substring(0, 20)}...` : "UNDEFINED";
+  console.log(`[Database] Attempting connection with URI: ${maskedUri}`);
+
   if (!mongoUri) {
-    console.warn("MONGODB_URI not found. Running in mock mode.");
+    console.warn("⚠️ [Database] MONGODB_URI not found. Running in mock mode.");
     return;
   }
 
   try {
     await mongoose.connect(mongoUri);
-    console.log("✅ Main server connected to MongoDB");
+    console.log("✅ [Database] Main server connected to MongoDB");
   } catch (error) {
-    console.error("❌ MongoDB connection error:", error);
+    console.error("❌ [Database] MongoDB connection error:", error);
   }
 }
 
@@ -72,6 +88,19 @@ export function createServer() {
   app.use(express.urlencoded({ extended: true }));
 
   // Health check
+  app.get("/api/health", (req, res) => {
+    const mongoUri = process.env.MONGODB_URI;
+    res.json({
+      status: "OK",
+      time: new Date().toISOString(),
+      db: {
+        status: ["Disconnected", "Connected", "Connecting", "Disconnecting"][mongoose.connection.readyState],
+        hasUri: !!mongoUri,
+        uriPrefix: mongoUri ? mongoUri.split(':')[0] : null
+      }
+    });
+  });
+
   app.get("/api/ping", (_req, res) => {
     res.json({ message: "Welcome to Bus नियोजक API!" });
   });
