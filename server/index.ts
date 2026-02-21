@@ -43,18 +43,14 @@ try {
   const __dirname = path.dirname(__filename);
   const envPath = path.resolve(__dirname, "../.env");
 
-  // Try to load .env if it exists
-  const result = dotenv.config({ path: envPath, override: true });
-
-  if (result.error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.log(`[Environment] Note: No .env file found at ${envPath}`);
+  if (process.env.NODE_ENV !== "production") {
+    const result = dotenv.config({ path: envPath, override: true });
+    if (!result.error) {
+      console.log(`[Environment] Loaded .env variables from: ${envPath}`);
     }
-  } else {
-    console.log(`[Environment] Loaded .env variables from: ${envPath}`);
   }
 } catch (e) {
-  console.log("[Environment] Non-critical error loading .env. Continuing with system environment.");
+  // Silent fail in production
 }
 
 console.log(`[Environment] Current NODE_ENV: ${process.env.NODE_ENV}`);
