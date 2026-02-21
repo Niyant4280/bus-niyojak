@@ -1,22 +1,37 @@
 import express from 'express';
-import mongoose from 'mongoose';
+import fs from 'fs';
+import path from 'path';
 
 const app = express();
 
+function listFiles(dir: string, depth = 0): any[] {
+    if (depth > 2) return ['...'];
+    try {
+        const items = fs.readdirSync(dir);
+        return items.map(item => {
+            const fullPath = path.join(dir, item);
+            const isDir = fs.statSync(fullPath).isDirectory();
+            return {
+                name: item,
+                type: isDir ? 'dir' : 'file',
+                children: isDir ? listFiles(fullPath, depth + 1) : undefined
+            };
+        });
+    } catch (e) {
+        return [String(e)];
+    }
+}
+
 app.get('*', async (req, res) => {
     try {
-        const dbStatus = mongoose.connection.readyState;
+        const taskDir = '/var/task';
+        const structure = listFiles(taskDir);
+
         res.status(200).json({
             status: 'DEBUG_OK',
-            message: 'Isolated debug function is running',
-            env: {
-                NODE_ENV: process.env.NODE_ENV,
-                HAS_MONO_URI: !!process.env.MONGODB_URI
-            },
-            database: {
-                state: dbStatus,
-                stateName: ['disconnected', 'connected', 'connecting', 'disconnecting'][dbStatus] || 'unknown'
-            }
+            cwd: process.cwd(),
+            taskDir,
+            structure
         });
     } catch (error) {
         res.status(500).json({
