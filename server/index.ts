@@ -38,17 +38,27 @@ import mongoose from "mongoose";
 import path from "path";
 import { fileURLToPath } from "url";
 // Environment variable handling
-if (process.env.NODE_ENV !== "production") {
-  try {
-    const __filename = fileURLToPath(import.meta.url);
-    const __dirname = path.dirname(__filename);
-    const envPath = path.resolve(__dirname, "../.env");
-    dotenv.config({ path: envPath, override: true });
-    console.log(`[Environment] Local .env loaded from: ${envPath}`);
-  } catch (e) {
-    console.error("[Environment] Failed to load .env:", e);
+try {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+  const envPath = path.resolve(__dirname, "../.env");
+
+  // Try to load .env if it exists
+  const result = dotenv.config({ path: envPath, override: true });
+
+  if (result.error) {
+    if (process.env.NODE_ENV !== "production") {
+      console.log(`[Environment] Note: No .env file found at ${envPath}`);
+    }
+  } else {
+    console.log(`[Environment] Loaded .env variables from: ${envPath}`);
   }
+} catch (e) {
+  console.log("[Environment] Non-critical error loading .env. Continuing with system environment.");
 }
+
+console.log(`[Environment] Current NODE_ENV: ${process.env.NODE_ENV}`);
+console.log(`[Environment] MONGODB_URI detected: ${process.env.MONGODB_URI ? "YES" : "NO"}`);
 
 /**
  * Ensures MongoDB is connected.
