@@ -81,34 +81,19 @@ export default function AdminRoutePlanner() {
     if (!location.trim()) return;
     setSearchingLocation(type);
     try {
-      // Step 1: Clean the location string (remove extra commas/spaces)
+      // Step 1: Clean and prepare the location
       const cleanLocation = location.replace(/,+/g, ',').trim();
 
-      // Stage 1: Specific Delhi search
-      let response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cleanLocation)}&limit=1&countrycodes=in&state=Delhi`
-      );
-      let data = await response.json();
+      // Step 2: Fetch from Photon (Komoot) - much faster and more reliable than Nominatim
+      // Using q and limit=1. We can also bias towards India if needed.
+      const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(cleanLocation)}&limit=1`;
+      const response = await fetch(url);
+      const data = await response.json();
 
-      // Stage 2: Broad India search if Stage 1 fails
-      if (!data || data.length === 0) {
-        response = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cleanLocation)}&limit=1&countrycodes=in`
-        );
-        data = await response.json();
-      }
-
-      // Stage 3: Global search if Stage 2 fails (The "Universal" fallback)
-      if (!data || data.length === 0) {
-        response = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cleanLocation)}&limit=1`
-        );
-        data = await response.json();
-      }
-
-      if (data && data.length > 0) {
-        const { lat, lon } = data[0];
-        const coords = { lat: parseFloat(lat), lng: parseFloat(lon) };
+      if (data && data.features && data.features.length > 0) {
+        // Photon return coordinates as [lng, lat]
+        const [lng, lat] = data.features[0].geometry.coordinates;
+        const coords = { lat, lng };
 
         if (type === 'from') {
           setFromCoords(coords);
@@ -118,11 +103,15 @@ export default function AdminRoutePlanner() {
           if (fromCoords) setPath([fromCoords, coords]);
         }
       } else {
-        alert(`Could not find "${location}". Try a simpler name like just "Red Fort" or check your spelling.`);
+        // Step 3: Minimal fallback for common Delhi landmarks if search fails
+        if (cleanLocation.toLowerCase().includes("red fort")) {
+          return geocodeLocation("Lal Qila", type);
+        }
+        alert(`Could not find "${location}". Please try a simpler name or check spelling.`);
       }
     } catch (error) {
       console.error('Geocoding error:', error);
-      alert('Map service is temporarily unavailable. Please try again in a moment.');
+      alert('Map search service is currently down. Please try again later.');
     } finally {
       setSearchingLocation(null);
     }
