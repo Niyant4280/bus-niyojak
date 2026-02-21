@@ -78,18 +78,30 @@ export default function AdminRoutePlanner() {
   };
 
   const geocodeLocation = async (location: string, type: 'from' | 'to') => {
+    if (!location.trim()) return;
     setSearchingLocation(type);
     try {
-      // Try with specific Delhi filter first
+      // Step 1: Clean the location string (remove extra commas/spaces)
+      const cleanLocation = location.replace(/,+/g, ',').trim();
+
+      // Stage 1: Specific Delhi search
       let response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}&limit=1&countrycodes=in&state=Delhi`
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cleanLocation)}&limit=1&countrycodes=in&state=Delhi`
       );
       let data = await response.json();
 
-      // If not found, try a broader search in India
+      // Stage 2: Broad India search if Stage 1 fails
       if (!data || data.length === 0) {
         response = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}&limit=1&countrycodes=in`
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cleanLocation)}&limit=1&countrycodes=in`
+        );
+        data = await response.json();
+      }
+
+      // Stage 3: Global search if Stage 2 fails (The "Universal" fallback)
+      if (!data || data.length === 0) {
+        response = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cleanLocation)}&limit=1`
         );
         data = await response.json();
       }
@@ -100,19 +112,17 @@ export default function AdminRoutePlanner() {
 
         if (type === 'from') {
           setFromCoords(coords);
-          // Update path if toCoords is already set
           if (toCoords) setPath([coords, toCoords]);
         } else {
           setToCoords(coords);
-          // Update path if fromCoords is already set
           if (fromCoords) setPath([fromCoords, coords]);
         }
       } else {
-        alert(`Location "${location}" not found. Try adding more details like "Old Delhi" or just "Red Fort".`);
+        alert(`Could not find "${location}". Try a simpler name like just "Red Fort" or check your spelling.`);
       }
     } catch (error) {
       console.error('Geocoding error:', error);
-      alert('Error connecting to map service. Please check your internet connection.');
+      alert('Map service is temporarily unavailable. Please try again in a moment.');
     } finally {
       setSearchingLocation(null);
     }
