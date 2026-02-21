@@ -35,6 +35,8 @@ import {
 } from "./routes/auth";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import path from "path";
+import { fileURLToPath } from "url";
 // Environment variable handling
 if (process.env.NODE_ENV !== "production") {
   try {
