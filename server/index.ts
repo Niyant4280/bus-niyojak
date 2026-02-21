@@ -74,7 +74,9 @@ async function connectToDatabase() {
   }
 
   try {
-    await mongoose.connect(mongoUri);
+    await mongoose.connect(mongoUri, {
+      serverSelectionTimeoutMS: 5000,
+    });
     console.log("✅ [Database] Main server connected to MongoDB");
   } catch (error) {
     console.error("❌ [Database] MongoDB connection error:", error);

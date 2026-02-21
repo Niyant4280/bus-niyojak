@@ -1,22 +1,24 @@
 import { createServer } from "../server/index";
 import express from "express";
 
-console.log("[Vercel] API Entry Point Initializing with Static Import...");
-
 let app;
-try {
-    app = createServer();
-    console.log("[Vercel] Express app initialized successfully");
-} catch (error) {
-    console.error("[Vercel] FATAL Initialization Error:", error);
-    app = express();
-    app.all("*", (req, res) => {
-        res.status(500).json({
-            error: "Vercel function initialization failed",
-            details: error instanceof Error ? error.message : String(error),
-            stack: error instanceof Error ? error.stack : undefined
-        });
-    });
-}
 
-export default app;
+export default (req, res) => {
+    try {
+        if (!app) {
+            console.log("[Vercel] Initializing Express app...");
+            app = createServer();
+            console.log("[Vercel] Express app initialized");
+        }
+        return app(req, res);
+    } catch (error) {
+        console.error("[Vercel] FATAL Execution Error:", error);
+        if (!res.headersSent) {
+            res.status(500).json({
+                error: "Vercel function execution failed",
+                details: error instanceof Error ? error.message : String(error),
+                path: req.url
+            });
+        }
+    }
+};
