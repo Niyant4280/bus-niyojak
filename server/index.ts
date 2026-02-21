@@ -6,6 +6,7 @@ import {
   searchRoutesBetweenStops,
   getAllStops,
   getAllRoutes,
+  createRoute,
   getRouteById,
   getDashboardStats,
   getLiveBusLocations,
@@ -120,6 +121,7 @@ export function createServer() {
   app.get("/api/routes/search", searchRoutesBetweenStops);
   app.get("/api/stops", getAllStops);
   app.get("/api/routes", getAllRoutes);
+  app.post("/api/routes", requireAdmin, createRoute);
   app.get("/api/routes/:id", getRouteById);
   app.post("/api/routes/overlap", computeRouteOverlap);
   app.get("/api/dashboard/stats", getDashboardStats);
