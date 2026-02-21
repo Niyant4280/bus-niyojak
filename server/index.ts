@@ -35,19 +35,13 @@ import {
 } from "./routes/auth";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import path from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Load environment variables locally only (Vercel provides them directly)
+// Environment variable handling
 if (process.env.NODE_ENV !== "production") {
   try {
-    dotenv.config({ path: path.resolve(__dirname, "../.env") });
-    console.log("[Environment] Local .env loaded");
+    dotenv.config();
+    console.log("[Environment] Local .env loaded (if present)");
   } catch (e) {
-    console.log("[Environment] No .env found or failed to load");
+    // Silent catch for production environments where dotenv might not be needed
   }
 }
 
