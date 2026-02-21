@@ -2,11 +2,15 @@
     "buildCommand": "npm run build:client",
     "outputDirectory": "dist/spa",
     "functions": {
-        "api/*.ts": {
+        "api/**/*.ts": {
             "includeFiles": "{server,shared}/**"
         }
     },
     "rewrites": [
+        {
+            "source": "/api/debug",
+            "destination": "/api/debug.ts"
+        },
         {
             "source": "/api/ping",
             "destination": "/api/ping.ts"
