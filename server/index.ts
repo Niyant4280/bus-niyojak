@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import { handleDemo } from "./routes/demo";
+import { handleDemo } from "./routes/demo.js";
 import {
   searchBusByNumber,
   searchRoutesBetweenStops,
@@ -14,15 +14,15 @@ import {
   createBus,
   updateBus,
   deleteBus
-} from "./routes/buses";
-import { adminLogin, verifyAdminToken, adminLogout, getAdminProfile, requireAdmin } from "./routes/admin";
-import { listSchedules, getScheduleById, createSchedule, updateSchedule, deleteSchedule } from "./routes/scheduler";
-import { listCrew, getCrewById, createCrew, updateCrew, deleteCrew } from "./routes/crew";
+} from "./routes/buses.js";
+import { adminLogin, verifyAdminToken, adminLogout, getAdminProfile, requireAdmin } from "./routes/admin.js";
+import { listSchedules, getScheduleById, createSchedule, updateSchedule, deleteSchedule } from "./routes/scheduler.js";
+import { listCrew, getCrewById, createCrew, updateCrew, deleteCrew } from "./routes/crew.js";
 import {
   getGTFSRoutes,
   getGTFSStops,
   searchGTFSRoutes,
-} from "./routes/gtfs";
+} from "./routes/gtfs.js";
 import {
   userLogin,
   userRegister,
@@ -32,7 +32,7 @@ import {
   updateUserProfile,
   requireUser,
   forgotPassword,
-} from "./routes/auth";
+} from "./routes/auth.js";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import path from "path";
