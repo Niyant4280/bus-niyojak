@@ -80,11 +80,19 @@ export default function AdminRoutePlanner() {
   const geocodeLocation = async (location: string, type: 'from' | 'to') => {
     setSearchingLocation(type);
     try {
-      // Using OpenStreetMap Nominatim API for geocoding
-      const response = await fetch(
+      // Try with specific Delhi filter first
+      let response = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}&limit=1&countrycodes=in&state=Delhi`
       );
-      const data = await response.json();
+      let data = await response.json();
+
+      // If not found, try a broader search in India
+      if (!data || data.length === 0) {
+        response = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}&limit=1&countrycodes=in`
+        );
+        data = await response.json();
+      }
 
       if (data && data.length > 0) {
         const { lat, lon } = data[0];
@@ -92,22 +100,19 @@ export default function AdminRoutePlanner() {
 
         if (type === 'from') {
           setFromCoords(coords);
+          // Update path if toCoords is already set
+          if (toCoords) setPath([coords, toCoords]);
         } else {
           setToCoords(coords);
-        }
-
-        // Update path if both locations are set
-        if (type === 'from' && toCoords) {
-          setPath([coords, toCoords]);
-        } else if (type === 'to' && fromCoords) {
-          setPath([fromCoords, coords]);
+          // Update path if fromCoords is already set
+          if (fromCoords) setPath([fromCoords, coords]);
         }
       } else {
-        alert(`Location "${location}" not found. Please try a different location.`);
+        alert(`Location "${location}" not found. Try adding more details like "Old Delhi" or just "Red Fort".`);
       }
     } catch (error) {
       console.error('Geocoding error:', error);
-      alert('Error finding location. Please try again.');
+      alert('Error connecting to map service. Please check your internet connection.');
     } finally {
       setSearchingLocation(null);
     }
