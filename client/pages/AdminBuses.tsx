@@ -27,7 +27,7 @@ export default function AdminBuses() {
     lastMaintenanceDate: "",
     nextMaintenanceDate: "",
     busStatus: "Active",
-      capacity: 50,
+    capacity: 50,
     fuelType: "CNG",
     registrationDate: "",
     manufacturer: "",
@@ -126,10 +126,10 @@ export default function AdminBuses() {
   };
 
   const filtered = buses.filter((b) => {
-    const matchesSearch = b.busId.toLowerCase().includes(search.toLowerCase()) || 
-                         b.busNumber.toLowerCase().includes(search.toLowerCase()) ||
-                         b.manufacturer.toLowerCase().includes(search.toLowerCase()) ||
-                         b.model.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch = (b.busId || "").toLowerCase().includes(search.toLowerCase()) ||
+      (b.busNumber || "").toLowerCase().includes(search.toLowerCase()) ||
+      (b.manufacturer || "").toLowerCase().includes(search.toLowerCase()) ||
+      (b.model || "").toLowerCase().includes(search.toLowerCase());
     const matchesStatus = statusFilter === "all" || b.busStatus === statusFilter;
     const matchesAc = acFilter === "all" || b.acType === acFilter;
     return matchesSearch && matchesStatus && matchesAc;
@@ -229,7 +229,7 @@ export default function AdminBuses() {
 
       printWindow.document.write(html);
       printWindow.document.close();
-      
+
     } catch (error) {
       console.error('Error generating PDF:', error);
       alert('Error generating PDF. Please try again.');
@@ -244,7 +244,7 @@ export default function AdminBuses() {
           <div className="flex items-center gap-4">
             <Button variant="outline" size="sm" asChild>
               <Link to="/admin">
-                <ArrowLeft className="h-4 w-4 mr-2"/>Back
+                <ArrowLeft className="h-4 w-4 mr-2" />Back
               </Link>
             </Button>
             <div>
@@ -264,68 +264,68 @@ export default function AdminBuses() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
           <div className="lg:col-span-2">
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-                  <Filter className="h-5 w-5 mr-2"/>Filters
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+            <Card className="mb-6">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Filter className="h-5 w-5 mr-2" />Filters
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                   <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-700">Search</label>
-                  <Input
-                      placeholder="Bus ID, number, manufacturer or model" 
-                      value={search} 
-                      onChange={(e) => setSearch(e.target.value)} 
-                  />
-                </div>
+                    <label className="text-sm font-medium text-gray-700">Search</label>
+                    <Input
+                      placeholder="Bus ID, number, manufacturer or model"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                    />
+                  </div>
                   <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-700">Status</label>
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="All statuses" />
-                  </SelectTrigger>
-                  <SelectContent>
+                    <label className="text-sm font-medium text-gray-700">Status</label>
+                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="All statuses" />
+                      </SelectTrigger>
+                      <SelectContent>
                         <SelectItem value="all">All</SelectItem>
                         <SelectItem value="Active">Active</SelectItem>
                         <SelectItem value="In Maintenance">In Maintenance</SelectItem>
                         <SelectItem value="Retired">Retired</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+                      </SelectContent>
+                    </Select>
+                  </div>
                   <div className="space-y-1.5">
                     <label className="text-sm font-medium text-gray-700">AC Type</label>
                     <Select value={acFilter} onValueChange={setAcFilter}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="All types" />
-                  </SelectTrigger>
-                  <SelectContent>
+                      <SelectTrigger>
+                        <SelectValue placeholder="All types" />
+                      </SelectTrigger>
+                      <SelectContent>
                         <SelectItem value="all">All</SelectItem>
                         <SelectItem value="AC">AC</SelectItem>
                         <SelectItem value="Non-AC">Non-AC</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardHeader>
+            <Card>
+              <CardHeader>
                 <CardTitle>Buses ({filtered.length})</CardTitle>
-          </CardHeader>
-          <CardContent>
+              </CardHeader>
+              <CardContent>
                 {filtered.length === 0 ? (
-              <div className="text-center py-12">
-                    <BusIcon className="h-12 w-12 text-gray-400 mx-auto mb-4"/>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No buses found</h3>
+                  <div className="text-center py-12">
+                    <BusIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No buses found</h3>
                     <p className="text-gray-600">Add your first bus using the form</p>
-              </div>
-            ) : (
+                  </div>
+                ) : (
                   <div className="overflow-x-auto -mx-2 sm:mx-0">
                     <Table className="min-w-[1200px] text-sm">
-                  <TableHeader>
+                      <TableHeader>
                         <TableRow className="border-b">
                           <TableHead className="py-3 px-3">Bus ID</TableHead>
                           <TableHead className="py-3 px-3">Model</TableHead>
@@ -337,24 +337,24 @@ export default function AdminBuses() {
                           <TableHead className="py-3 px-3">Capacity</TableHead>
                           <TableHead className="py-3 px-3">Fuel</TableHead>
                           <TableHead className="py-3 px-3">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
                         {filtered.map((bus) => (
                           <TableRow key={bus.id} className="align-top">
                             <TableCell className="py-3 px-3 align-top">
                               <div className="font-medium text-gray-900 break-words">{bus.busId}</div>
                               <div className="text-xs text-gray-500">{bus.busNumber}</div>
-                        </TableCell>
+                            </TableCell>
                             <TableCell className="py-3 px-3 align-top">
                               <div className="text-sm">{bus.manufacturer} {bus.model}</div>
                               <div className="text-xs text-gray-500">{bus.year}</div>
-                        </TableCell>
+                            </TableCell>
                             <TableCell className="py-3 px-3 align-top">
                               <Badge className={bus.acType === "AC" ? "bg-blue-100 text-blue-800" : "bg-gray-100 text-gray-800"}>
                                 {bus.acType}
-                          </Badge>
-                        </TableCell>
+                              </Badge>
+                            </TableCell>
                             <TableCell className="py-3 px-3 align-top">
                               <div className="text-sm">{bus.avgMileage} km/L</div>
                             </TableCell>
@@ -367,28 +367,28 @@ export default function AdminBuses() {
                             <TableCell className="py-3 px-3 align-top">
                               <Badge className={
                                 bus.busStatus === "Active" ? "bg-green-100 text-green-800" :
-                                bus.busStatus === "In Maintenance" ? "bg-yellow-100 text-yellow-800" :
-                                "bg-gray-100 text-gray-800"
+                                  bus.busStatus === "In Maintenance" ? "bg-yellow-100 text-yellow-800" :
+                                    "bg-gray-100 text-gray-800"
                               }>
                                 {bus.busStatus}
-                            </Badge>
-                        </TableCell>
+                              </Badge>
+                            </TableCell>
                             <TableCell className="py-3 px-3 align-top">
                               <div className="text-sm">{bus.capacity} seats</div>
-                        </TableCell>
+                            </TableCell>
                             <TableCell className="py-3 px-3 align-top">
                               <div className="text-sm">{bus.fuelType}</div>
-                        </TableCell>
+                            </TableCell>
                             <TableCell className="py-3 px-3 align-top">
-                          <div className="flex items-center gap-1">
+                              <div className="flex items-center gap-1">
                                 <Button variant="ghost" size="sm" onClick={() => handleEdit(bus)}>
-                                  <Edit className="h-4 w-4"/>
-                            </Button>
+                                  <Edit className="h-4 w-4" />
+                                </Button>
                                 <Dialog open={showDeleteId === bus.id} onOpenChange={(open) => setShowDeleteId(open ? bus.id : null)}>
                                   <DialogTrigger asChild>
-                            <Button variant="ghost" size="sm">
-                                      <Trash2 className="h-4 w-4"/>
-                            </Button>
+                                    <Button variant="ghost" size="sm">
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
                                   </DialogTrigger>
                                   <DialogContent>
                                     <DialogHeader>
@@ -401,16 +401,16 @@ export default function AdminBuses() {
                                     </DialogFooter>
                                   </DialogContent>
                                 </Dialog>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </div>
 
           <div className="lg:col-span-1">
@@ -425,20 +425,20 @@ export default function AdminBuses() {
                 <form className="space-y-3 sm:space-y-4" onSubmit={submit}>
                   <div className="space-y-1">
                     <label className="text-sm font-medium text-gray-700">Bus ID</label>
-                    <Input 
-                      className="bg-white border border-gray-300 focus:border-gray-400 focus:ring-0 rounded-md h-10" 
-                      value={form.busId || ""} 
-                      onChange={(e) => setForm((f) => ({ ...f, busId: e.target.value }))} 
-                      required 
+                    <Input
+                      className="bg-white border border-gray-300 focus:border-gray-400 focus:ring-0 rounded-md h-10"
+                      value={form.busId || ""}
+                      onChange={(e) => setForm((f) => ({ ...f, busId: e.target.value }))}
+                      required
                     />
                   </div>
                   <div className="space-y-1">
                     <label className="text-sm font-medium text-gray-700">Bus Number</label>
-                    <Input 
-                      className="bg-white border border-gray-300 focus:border-gray-400 focus:ring-0 rounded-md h-10" 
-                      value={form.busNumber || ""} 
-                      onChange={(e) => setForm((f) => ({ ...f, busNumber: e.target.value }))} 
-                      required 
+                    <Input
+                      className="bg-white border border-gray-300 focus:border-gray-400 focus:ring-0 rounded-md h-10"
+                      value={form.busNumber || ""}
+                      onChange={(e) => setForm((f) => ({ ...f, busNumber: e.target.value }))}
+                      required
                     />
                   </div>
                   <div className="space-y-1">
@@ -469,40 +469,40 @@ export default function AdminBuses() {
                   </div>
                   <div className="space-y-1">
                     <label className="text-sm font-medium text-gray-700">Manufacturer</label>
-                    <Input 
-                      className="bg-white border border-gray-300 focus:border-gray-400 focus:ring-0 rounded-md h-10" 
-                      value={form.manufacturer || ""} 
-                      onChange={(e) => setForm((f) => ({ ...f, manufacturer: e.target.value }))} 
-                      required 
+                    <Input
+                      className="bg-white border border-gray-300 focus:border-gray-400 focus:ring-0 rounded-md h-10"
+                      value={form.manufacturer || ""}
+                      onChange={(e) => setForm((f) => ({ ...f, manufacturer: e.target.value }))}
+                      required
                     />
                   </div>
                   <div className="space-y-1">
                     <label className="text-sm font-medium text-gray-700">Model</label>
-                    <Input 
-                      className="bg-white border border-gray-300 focus:border-gray-400 focus:ring-0 rounded-md h-10" 
-                      value={form.model || ""} 
-                      onChange={(e) => setForm((f) => ({ ...f, model: e.target.value }))} 
-                      required 
+                    <Input
+                      className="bg-white border border-gray-300 focus:border-gray-400 focus:ring-0 rounded-md h-10"
+                      value={form.model || ""}
+                      onChange={(e) => setForm((f) => ({ ...f, model: e.target.value }))}
+                      required
                     />
                   </div>
                   <div className="space-y-1">
                     <label className="text-sm font-medium text-gray-700">Year</label>
-                    <Input 
-                      className="bg-white border border-gray-300 focus:border-gray-400 focus:ring-0 rounded-md h-10" 
-                      type="number" 
-                      value={form.year || new Date().getFullYear()} 
-                      onChange={(e) => setForm((f) => ({ ...f, year: parseInt(e.target.value) }))} 
-                      required 
+                    <Input
+                      className="bg-white border border-gray-300 focus:border-gray-400 focus:ring-0 rounded-md h-10"
+                      type="number"
+                      value={form.year || new Date().getFullYear()}
+                      onChange={(e) => setForm((f) => ({ ...f, year: parseInt(e.target.value) }))}
+                      required
                     />
                   </div>
                   <div className="space-y-1">
                     <label className="text-sm font-medium text-gray-700">Capacity</label>
-                    <Input 
-                      className="bg-white border border-gray-300 focus:border-gray-400 focus:ring-0 rounded-md h-10" 
-                      type="number" 
-                      value={form.capacity || 50} 
-                      onChange={(e) => setForm((f) => ({ ...f, capacity: parseInt(e.target.value) }))} 
-                      required 
+                    <Input
+                      className="bg-white border border-gray-300 focus:border-gray-400 focus:ring-0 rounded-md h-10"
+                      type="number"
+                      value={form.capacity || 50}
+                      onChange={(e) => setForm((f) => ({ ...f, capacity: parseInt(e.target.value) }))}
+                      required
                     />
                   </div>
                   <div className="space-y-1">
@@ -520,12 +520,12 @@ export default function AdminBuses() {
                   </div>
                   <div className="space-y-1">
                     <label className="text-sm font-medium text-gray-700">Average Mileage (km/L)</label>
-                    <Input 
-                      className="bg-white border border-gray-300 focus:border-gray-400 focus:ring-0 rounded-md h-10" 
-                      type="number" 
-                      step="0.1" 
-                      value={form.avgMileage || 0} 
-                      onChange={(e) => setForm((f) => ({ ...f, avgMileage: parseFloat(e.target.value) }))} 
+                    <Input
+                      className="bg-white border border-gray-300 focus:border-gray-400 focus:ring-0 rounded-md h-10"
+                      type="number"
+                      step="0.1"
+                      value={form.avgMileage || 0}
+                      onChange={(e) => setForm((f) => ({ ...f, avgMileage: parseFloat(e.target.value) }))}
                     />
                   </div>
                   <div className="space-y-1">
@@ -544,58 +544,58 @@ export default function AdminBuses() {
                   <div className="grid grid-cols-2 gap-2">
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">Last Maintenance</label>
-                      <Input 
-                        className="bg-white border border-gray-300 focus:border-gray-400 focus:ring-0 rounded-md h-10" 
-                        type="date" 
-                        value={form.lastMaintenanceDate || ""} 
-                        onChange={(e) => setForm((f) => ({ ...f, lastMaintenanceDate: e.target.value }))} 
+                      <Input
+                        className="bg-white border border-gray-300 focus:border-gray-400 focus:ring-0 rounded-md h-10"
+                        type="date"
+                        value={form.lastMaintenanceDate || ""}
+                        onChange={(e) => setForm((f) => ({ ...f, lastMaintenanceDate: e.target.value }))}
                       />
                     </div>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">Next Maintenance</label>
-                      <Input 
-                        className="bg-white border border-gray-300 focus:border-gray-400 focus:ring-0 rounded-md h-10" 
-                        type="date" 
-                        value={form.nextMaintenanceDate || ""} 
-                        onChange={(e) => setForm((f) => ({ ...f, nextMaintenanceDate: e.target.value }))} 
+                      <Input
+                        className="bg-white border border-gray-300 focus:border-gray-400 focus:ring-0 rounded-md h-10"
+                        type="date"
+                        value={form.nextMaintenanceDate || ""}
+                        onChange={(e) => setForm((f) => ({ ...f, nextMaintenanceDate: e.target.value }))}
                       />
                     </div>
                   </div>
                   <div className="space-y-1">
                     <label className="text-sm font-medium text-gray-700">Registration Date</label>
-                    <Input 
-                      className="bg-white border border-gray-300 focus:border-gray-400 focus:ring-0 rounded-md h-10" 
-                      type="date" 
-                      value={form.registrationDate || ""} 
-                      onChange={(e) => setForm((f) => ({ ...f, registrationDate: e.target.value }))} 
+                    <Input
+                      className="bg-white border border-gray-300 focus:border-gray-400 focus:ring-0 rounded-md h-10"
+                      type="date"
+                      value={form.registrationDate || ""}
+                      onChange={(e) => setForm((f) => ({ ...f, registrationDate: e.target.value }))}
                     />
                   </div>
                   <div className="space-y-1">
                     <label className="text-sm font-medium text-gray-700">Assigned Route</label>
-                    <Input 
-                      className="bg-white border border-gray-300 focus:border-gray-400 focus:ring-0 rounded-md h-10" 
-                      value={form.assignedRoute || ""} 
-                      onChange={(e) => setForm((f) => ({ ...f, assignedRoute: e.target.value }))} 
-                      placeholder="e.g. Route-101" 
+                    <Input
+                      className="bg-white border border-gray-300 focus:border-gray-400 focus:ring-0 rounded-md h-10"
+                      value={form.assignedRoute || ""}
+                      onChange={(e) => setForm((f) => ({ ...f, assignedRoute: e.target.value }))}
+                      placeholder="e.g. Route-101"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">Driver ID</label>
-                      <Input 
-                        className="bg-white border border-gray-300 focus:border-gray-400 focus:ring-0 rounded-md h-10" 
-                        value={form.driverId || ""} 
-                        onChange={(e) => setForm((f) => ({ ...f, driverId: e.target.value }))} 
-                        placeholder="e.g. DRV-001" 
+                      <Input
+                        className="bg-white border border-gray-300 focus:border-gray-400 focus:ring-0 rounded-md h-10"
+                        value={form.driverId || ""}
+                        onChange={(e) => setForm((f) => ({ ...f, driverId: e.target.value }))}
+                        placeholder="e.g. DRV-001"
                       />
                     </div>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">Conductor ID</label>
-                      <Input 
-                        className="bg-white border border-gray-300 focus:border-gray-400 focus:ring-0 rounded-md h-10" 
-                        value={form.conductorId || ""} 
-                        onChange={(e) => setForm((f) => ({ ...f, conductorId: e.target.value }))} 
-                        placeholder="e.g. CON-001" 
+                      <Input
+                        className="bg-white border border-gray-300 focus:border-gray-400 focus:ring-0 rounded-md h-10"
+                        value={form.conductorId || ""}
+                        onChange={(e) => setForm((f) => ({ ...f, conductorId: e.target.value }))}
+                        placeholder="e.g. CON-001"
                       />
                     </div>
                   </div>

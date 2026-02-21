@@ -56,11 +56,11 @@ export default function RoutesPage() {
     try {
       setLoading(true);
       setError(null);
-      
+
       // Fetch GTFS routes
       const routesResponse = await fetch('/api/gtfs/routes?limit=50');
       const routesResult = await routesResponse.json();
-      
+
       if (!routesResult.success) {
         throw new Error('Failed to fetch routes');
       }
@@ -68,7 +68,7 @@ export default function RoutesPage() {
       // Fetch some stops for each route (simplified - in real app you'd fetch stops per route)
       const stopsResponse = await fetch('/api/gtfs/stops?limit=100');
       const stopsResult = await stopsResponse.json();
-      
+
       const allStops: Stop[] = stopsResult.success ? stopsResult.data.map((stop: any) => ({
         id: stop.stop_id,
         name: stop.stop_name,
@@ -104,8 +104,8 @@ export default function RoutesPage() {
   }, [fetchRoutes]);
 
   const filteredRoutes = routes.filter((route) =>
-    route.name.toLowerCase().includes(search.toLowerCase()) ||
-    route.shortName.toLowerCase().includes(search.toLowerCase())
+    (route.name || "").toLowerCase().includes(search.toLowerCase()) ||
+    (route.shortName || "").toLowerCase().includes(search.toLowerCase())
   );
 
 
@@ -171,7 +171,7 @@ export default function RoutesPage() {
                 No routes found. Try a different search.
               </div>
             )}
-            
+
             <Accordion type="single" collapsible className="space-y-4">
               {filteredRoutes.map((route) => (
                 <AccordionItem
@@ -211,7 +211,7 @@ export default function RoutesPage() {
                       </div>
                     </div>
                   </AccordionTrigger>
-                  
+
                   <AccordionContent className="px-6 pb-6">
                     <div className="space-y-6">
                       {route.description && (
@@ -220,7 +220,7 @@ export default function RoutesPage() {
                           <p className="text-sm text-muted-foreground mt-1">{route.description}</p>
                         </div>
                       )}
-                      
+
                       <div>
                         <span className="font-semibold text-primary">Stops ({route.stops.length}):</span>
                         <ul className="list-disc list-inside ml-2 mt-2 space-y-1">
